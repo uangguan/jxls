@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.jxls.builder.xls.XlsCommentAreaBuilder;
 import org.jxls.common.Context;
 import org.jxls.entity.Employee;
 import org.jxls.transform.Transformer;
+import org.jxls.transform.poi.AutoColumnWidthCommand;
+import org.jxls.transform.poi.AutoRowHeightCommand;
 import org.jxls.transform.poi.PoiTransformer;
 import org.jxls.util.JxlsHelper;
 
@@ -54,7 +57,7 @@ public class JxlsTester implements AutoCloseable {
      * @return new JxlsTester instance
      */
     public static JxlsTester xls(Class<?> testclass) {
-        return new JxlsTester(testclass, testclass.getSimpleName() + ".xls");
+        return new JxlsTester(testclass, testclass.getSimpleName() + ".xlsx");
     }
 
     /**
@@ -74,6 +77,8 @@ public class JxlsTester implements AutoCloseable {
     public void processTemplate(Context context) {
         try (InputStream is = testclass.getResourceAsStream(excelTemplateFilename)) {
             try (OutputStream os = new FileOutputStream(out)) {
+                XlsCommentAreaBuilder.addCommandMapping("autoRowHeight", AutoRowHeightCommand.class);
+                XlsCommentAreaBuilder.addCommandMapping("autoColumnWidth", AutoColumnWidthCommand.class);
                 JxlsHelper jxls = JxlsHelper.getInstance();
                 if (useFastFormulaProcessor) {
                     jxls.setUseFastFormulaProcessor(useFastFormulaProcessor);
